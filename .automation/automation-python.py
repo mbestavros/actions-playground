@@ -1,11 +1,18 @@
 from github import Github
 import re
+import json
 import sys
 
 # Get inputs from shell
-token = sys.argv[0]
-repository = sys.argv[1]
-pr_number = sys.argv[2]
+token = sys.argv[1]
+repository = sys.argv[2]
+event_path = sys.argv[3]
+
+# Extract PR number from event JSON
+with open(event_path) as f:
+    event = json.load(f)
+
+pr_number = event["number"]
 
 # Authenticate with Github using our token
 g = Github(token)
@@ -35,8 +42,8 @@ for project in repo_projects:
                 issue_projects += [project]
 
 # Assign labels and projects to the pull request
-for project in issue_projects:
-    column_to_add = project.get_columns()[0]
-    print(pr.id)
-    column_to_add.create_card(content_id=pr.id, content_type="PullRequest")
+# for project in issue_projects:
+#     column_to_add = project.get_columns()[0]
+#     print(pr.id)
+#     column_to_add.create_card(content_id=pr.id, content_type="PullRequest")
 pr.set_labels(*issue_labels)

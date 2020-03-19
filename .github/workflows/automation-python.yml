@@ -5,9 +5,9 @@ on: [pull_request]
 jobs:
   automation-python:
     runs-on: ubuntu-latest
-    #container: quay.io/enarx/fedora-test
+    container: quay.io/enarx/fedora-test
     steps:
     - uses: actions/checkout@v2
     
     - name: mirror-issue-metadata-to-pull_request
-      run: ./.automation/get-pr-number #python3 .automation/automation-python.py {{ secrets.GITHUB_TOKEN }} $GITHUB_REPOSITORY
+      run: python3 .automation/automation-python.py ${{ secrets.GITHUB_TOKEN }} $GITHUB_REPOSITORY $GITHUB_EVENT_PATH

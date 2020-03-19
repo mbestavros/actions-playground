@@ -1,3 +1,2 @@
 #!/bin/bash -e
-
-echo $(grep $GITHUB_EVENT_PATH "pull_request_number")
+echo $(grep -o -m 1 '"number": [[:digit:]]' $GITHUB_EVENT_PATH | grep -o '[[:digit:]]')
