@@ -1,0 +1,12 @@
+name: tests
+
+on: [pull_request]
+
+jobs:
+  automation-python:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: run-a-test
+      run: echo "hello"

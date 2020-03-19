@@ -42,8 +42,8 @@ for project in repo_projects:
                 issue_projects += [project]
 
 # Assign labels and projects to the pull request
-# for project in issue_projects:
-#     column_to_add = project.get_columns()[0]
-#     print(pr.id)
-#     column_to_add.create_card(content_id=pr.id, content_type="PullRequest")
+for project in issue_projects:
+    column_to_add = project.get_columns()[0]
+    print(pr.id)
+    column_to_add.create_card(content_id=pr.id, content_type="PullRequest")
 pr.set_labels(*issue_labels)

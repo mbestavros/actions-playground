@@ -1,6 +1,6 @@
 name: automation-python
 
-on: [pull_request]
+on: [check_run]
 
 jobs:
   automation-python:
