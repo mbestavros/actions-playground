@@ -3,7 +3,7 @@ name: tests
 on: [pull_request]
 
 jobs:
-  automation-python:
+  test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2

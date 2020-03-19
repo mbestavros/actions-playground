@@ -3,7 +3,7 @@ name: automation-python
 on: [check_run]
 
 jobs:
-  automation-python:
+  automation-python-again:
     runs-on: ubuntu-latest
     container: quay.io/enarx/fedora-test
     steps:
