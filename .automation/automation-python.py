@@ -47,7 +47,7 @@ if len(closing_numbers) == 0:
 # acceptable labels list.
 labels_to_add = []
 for number in closing_numbers:
-    for label in repo.get_issue(number).labels:
+    for label in repo.get_issue(int(number)).labels:
         if label not in labels_to_add and label.name in COPYABLE_LABELS:
             labels_to_add += [label]
 
