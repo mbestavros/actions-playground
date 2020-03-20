@@ -13,7 +13,7 @@ event_path = sys.argv[3]
 with open(event_path) as f:
     event = json.load(f)
 
-pr_number = 11#event["number"]
+pr_number = 14#event["number"]
 
 # Authenticate with Github using our token
 g = Github(token)
