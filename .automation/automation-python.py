@@ -16,7 +16,7 @@ with open(event_path) as f:
 
 
 
-pr_number = 16#event["number"]
+pr_number = 19#event["number"]
 
 # Authenticate with Github using our token
 g = Github(token)
@@ -27,7 +27,12 @@ repo = g.get_repo(repository)
 pull_requests = repo.get_pulls()
 
 for potential_pr in pull_requests:
-    print(potential_pr.id)
+    print("potential_pr number:")
+    print(potential_pr.number)
+    print("head sha:")
+    print(potential_pr.head.sha)
+    print("head ref:")
+    print(potential_pr.head.sha)
 
 
 
