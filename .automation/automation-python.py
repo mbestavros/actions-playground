@@ -46,6 +46,9 @@ associated_issue = repo.get_issue(associated_issue_number)
 issue_labels = associated_issue.labels
 pr_labels = pr.labels
 
+# We don't want to mirror all labels the issue has; only those in this subset.
+mirrorable_issues = ["enhancement","good first issue"]
+
 unset_issue_labels = []
 for label in issue_labels:
     if label not in pr_labels:
