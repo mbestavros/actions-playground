@@ -34,7 +34,10 @@ for potential_pr in repo_pull_requests:
 
 # Extract associated issue from closing keyword in PR
 closing_keyword_regex = re.compile("Resolves #\d+")
-closing_keyword = closing_keyword_regex.search(pr.body).group()
+closing_keyword_results = closing_keyword_regex.search(pr.body)
+if closing_keyword_results is None:
+    quit()
+closing_keyword = closing_keyword_results.group()
 associated_issue_number_regex = re.compile("\d+")
 associated_issue_number = int(associated_issue_number_regex.search(closing_keyword).group())
 associated_issue = repo.get_issue(associated_issue_number)
