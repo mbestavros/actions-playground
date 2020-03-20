@@ -1,12 +1,13 @@
+
+# SPDX-License-Identifier: Apache-2.0
+
 import json
 import re
 import sys
 from github import Github
 
 # Get inputs from shell
-token = sys.argv[1]
-repository = sys.argv[2]
-event_path = sys.argv[3]
+(token, repository, path) = sys.argv[1:4]
 
 # Authenticate with Github using our token
 g = Github(token)
@@ -14,12 +15,14 @@ g = Github(token)
 # Initialize repo
 repo = g.get_repo(repository)
 
+# Open Github event JSON
+with open(path) as f:
+    event = json.load(f)
+
 # --- Extract PR from event JSON ---
 # `check_run`/`check_suite` does not include any direct reference to the PR
-# that triggered it in its event JSON.
-# We have to extrapolate it using the head SHA that *is* there.
-with open(event_path) as f:
-    event = json.load(f)
+# that triggered it in its event JSON. We have to extrapolate it using the head
+# SHA that *is* there.
 
 # Get head SHA from event JSON
 pr_head_sha = event["check_suite"]["head_sha"]
@@ -28,32 +31,35 @@ pr_head_sha = event["check_suite"]["head_sha"]
 repo_pull_requests = repo.get_pulls()
 
 # Find the repo PR that matches the head SHA we found
-for potential_pr in repo_pull_requests:
-    if potential_pr.head.sha == pr_head_sha:
-        pr = potential_pr
+pr = {pr.head.sha: pr for pr in repo_pull_requests}[pr_head_sha]
 
-# Extract associated issue from closing keyword in PR
-closing_keyword_regex = re.compile("Resolves #\d+")
-closing_keyword_results = closing_keyword_regex.search(pr.body)
-if closing_keyword_results is None:
+# Extract all associated issues from closing keyword in PR
+regex = re.compile("(close[sd]?|fix|fixe[sd]?|resolve[sd]?)\s*:?\s+#(\d+)", re.I)
+closing_numbers = [number for keyword, number in regex.findall(pr.body)]
+if len(closing_numbers) == 0:
     quit()
-closing_keyword = closing_keyword_results.group()
-associated_issue_number_regex = re.compile("\d+")
-associated_issue_number = int(associated_issue_number_regex.search(closing_keyword).group())
-associated_issue = repo.get_issue(associated_issue_number)
 
-# Get labels for both PR and associated issue
-issue_labels = associated_issue.labels
+# We don't want to copy all labels the issue has; only those in the subset
+# found in .automation/copyable-labels.json
+with open(path) as f:
+    copyable_labels = json.load("./copyable-labels.json")
+
+# Get the superset of every label on every linked issue, filtered by our 
+# acceptable labels list.
+labels_to_add = []
+for number in closing_numbers:
+    for label in repo.get_issue(number).labels:
+        if label not in labels_to_add and label.name in copyable_labels:
+            labels_to_add += [label]
+
+# Figure out all labels not yet set on the PR.
 pr_labels = pr.labels
-
-# We don't want to mirror all labels the issue has; only those in this subset.
-mirrorable_issues = ["enhancement","good first issue"]
-
 unset_issue_labels = []
-for label in issue_labels:
-    if(label.name in mirrorable_issues and label not in pr_labels):
+for label in labels_to_add:
+    if(label.name in copyable_labels and label not in pr_labels):
         unset_issue_labels += [label]
 
+# If there are any labels we need to add, add them.
 if len(unset_issue_labels) > 0:
     labels_to_set = pr_labels + unset_issue_labels
     pr.set_labels(*labels_to_set)
