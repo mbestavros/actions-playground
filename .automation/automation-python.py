@@ -39,6 +39,7 @@ pr = {pr.head.sha: pr for pr in repo_pull_requests}[pr_head_sha]
 # Extract all associated issues from closing keyword in PR
 regex = re.compile("(close[sd]?|fix|fixe[sd]?|resolve[sd]?)\s*:?\s+#(\d+)", re.I)
 closing_numbers = [number for keyword, number in regex.findall(pr.body)]
+print(closing_numbers)
 if len(closing_numbers) == 0:
     quit()
 
