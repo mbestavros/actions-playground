@@ -27,7 +27,7 @@ repo = g.get_repo(repository)
 pull_requests = repo.get_pulls()
 
 for potential_pr in pull_requests:
-    print(potential_pr.merge_commit_sha)
+    print(potential_pr.id)
 
 
 
