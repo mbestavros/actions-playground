@@ -13,7 +13,7 @@ event_path = sys.argv[3]
 with open(event_path) as f:
     event = json.load(f)
 
-pr_number = 14#event["number"]
+pr_number = 15#event["number"]
 
 # Authenticate with Github using our token
 g = Github(token)
@@ -32,26 +32,6 @@ associated_issue = repo.get_issue(issue_number)
 # Get labels for both PR and associated issue
 issue_labels = associated_issue.labels
 pr_labels = pr.labels
-
-# Get projects for both PR and associated issue
-repo_projects = repo.get_projects()
-issue_projects = []
-pr_projects = []
-for project in repo_projects:
-    for column in project.get_columns():
-        for card in column.get_cards():
-            card_content = card.get_content()
-            if card_content is not None:
-                if(card_content.number == issue_number):
-                    issue_projects += [project]
-                if(card_content.number == pr_number):
-                    pr_projects += [project]
-
-# Assign labels and projects to the pull request, if it doesn't have them already
-for project in issue_projects:
-    if project not in pr_projects:
-        column_to_add = project.get_columns()[0]
-        column_to_add.create_card(content_id=pr.id, content_type="PullRequest")
 
 unset_issue_labels = []
 for label in issue_labels:
