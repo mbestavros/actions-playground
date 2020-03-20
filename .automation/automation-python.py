@@ -33,7 +33,7 @@ repo_pull_requests = repo.get_pulls()
 # Find the repo PR that matches the head SHA we found
 print("POTENTIAL PRS")
 for potential_pr in repo_pull_requests:
-    print(potential_pr.head_sha)
+    print(potential_pr.head.sha)
     if potential_pr.head.sha == pr_head_sha:
         pr = potential_pr
 
