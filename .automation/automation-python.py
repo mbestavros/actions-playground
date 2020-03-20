@@ -13,13 +13,25 @@ event_path = sys.argv[3]
 with open(event_path) as f:
     event = json.load(f)
 
-pr_number = 15#event["number"]
+
+
+
+pr_number = 16#event["number"]
 
 # Authenticate with Github using our token
 g = Github(token)
 
 # Initialize repo and grab the pull request we're working on
 repo = g.get_repo(repository)
+
+pull_requests = repo.get_pulls()
+
+for potential_pr in pull_requests:
+    print(potential_pr.merge_commit_sha)
+
+
+
+
 pr = repo.get_pull(pr_number)
 
 # Extract associated issue from closing keyword in PR
