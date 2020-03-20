@@ -51,7 +51,7 @@ mirrorable_issues = ["enhancement","good first issue"]
 
 unset_issue_labels = []
 for label in issue_labels:
-    if label not in pr_labels:
+    if(label.name in mirrorable_issues and label not in pr_labels):
         unset_issue_labels += [label]
 
 if len(unset_issue_labels) > 0:
