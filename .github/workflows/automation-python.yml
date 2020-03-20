@@ -2,7 +2,7 @@ name: automation-python-again
 
 on:
   check_suite:
-    types: [requested]
+    types: [requested, rerequested, completed]
 
 jobs:
   automation-python-again:
