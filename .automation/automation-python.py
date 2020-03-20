@@ -9,6 +9,9 @@ from github import Github
 # Get inputs from shell
 (token, repository, path) = sys.argv[1:4]
 
+# We don't want to copy all labels on linked issues; only those in this subset.
+COPYABLE_LABELS = ["enhancement","good first issue"]
+
 # Authenticate with Github using our token
 g = Github(token)
 
@@ -39,24 +42,19 @@ closing_numbers = [number for keyword, number in regex.findall(pr.body)]
 if len(closing_numbers) == 0:
     quit()
 
-# We don't want to copy all labels the issue has; only those in the subset
-# found in .automation/copyable-labels.json
-with open(path) as f:
-    copyable_labels = json.load("./copyable-labels.json")
-
 # Get the superset of every label on every linked issue, filtered by our 
 # acceptable labels list.
 labels_to_add = []
 for number in closing_numbers:
     for label in repo.get_issue(number).labels:
-        if label not in labels_to_add and label.name in copyable_labels:
+        if label not in labels_to_add and label.name in COPYABLE_LABELS:
             labels_to_add += [label]
 
 # Figure out all labels not yet set on the PR.
 pr_labels = pr.labels
 unset_issue_labels = []
 for label in labels_to_add:
-    if(label.name in copyable_labels and label not in pr_labels):
+    if(label.name in COPYABLE_LABELS and label not in pr_labels):
         unset_issue_labels += [label]
 
 # If there are any labels we need to add, add them.
