@@ -1,8 +1,8 @@
 name: automation-python-again
 
 on:
-  check_run:
-    types: [created]
+  check_suite:
+    types: [requested]
 
 jobs:
   automation-python-again:
