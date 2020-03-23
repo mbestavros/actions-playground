@@ -52,7 +52,7 @@ if len(closing_numbers) == 0:
     quit()
 
 # Get the superset of every label on every linked issue.
-all_associated_issue_labels = {label for label in repo.get_issue(int(number)).labels for number in closing_numbers}
+all_associated_issue_labels = {label for number in closing_numbers for label in repo.get_issue(int(number)).labels}
 
 # Filter the superset by our list of acceptable labels to copy.
 copyable_associated_issue_labels = all_associated_issue_labels.intersection(COPYABLE_LABELS)
