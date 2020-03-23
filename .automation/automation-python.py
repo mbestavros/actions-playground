@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-# SPDX-License-Identifier: Apache-2.0
 
 import json
 import re
@@ -10,7 +9,7 @@ from github import Github
 COPYABLE_LABELS = {
     "enhancement",
     "good first issue",
-    }
+}
 
 # Get inputs from shell
 (token, repository, path) = sys.argv[1:4]
@@ -33,34 +32,38 @@ with open(path) as f:
 # Get head SHA from event JSON
 pr_head_sha = event["check_suite"]["head_sha"]
 
-# Get all repo pull requests
-repo_pull_requests = repo.get_pulls()
-
 # Find the repo PR that matches the head SHA we found
-pr = {pr.head.sha: pr for pr in repo_pull_requests}[pr_head_sha]
+pr = {pr.head.sha: pr for pr in repo.get_pulls()}[pr_head_sha]
 
 # Extract all associated issues from closing keyword in PR
 regex_pr_body = re.compile("(close[sd]?|fix|fixe[sd]?|resolve[sd]?)\s*:?\s+#(\d+)", re.I)
 closing_numbers_pr_body = {number for keyword, number in regex_pr_body.findall(pr.body)}
 
+# Extract all associated issues from PR commit messages
 regex_commit_messages = re.compile("(close[sd]?|fix|fixe[sd]?|resolve[sd]?|related)\s*:?\s+#(\d+)", re.I)
-closing_numbers_commit_messages = {number for commit in pr.get_commits() for keyword, number in regex_commit_messages.findall(commit.commit.message)}
+closing_numbers_commit_messages = {number for commit in pr.get_commits() \
+    for keyword, number in regex_commit_messages.findall(commit.commit.message)}
 
+# Get the union of both sets of associated issue numbers
 closing_numbers = closing_numbers_pr_body.union(closing_numbers_commit_messages)
 
-# Get the superset of every label on every linked issue, filtered by our 
-# acceptable labels list.
-labels_to_add = []
-for number in closing_numbers:
-    for label in repo.get_issue(int(number)).labels :
-        if label not in labels_to_add and label.name in COPYABLE_LABELS:
-            labels_to_add += [label]
+# If there are no associated issues, we're done. If not, we need to find out
+# which labels we need to add.
+if len(closing_numbers) == 0:
+    quit()
 
-# Figure out all labels not yet set on the PR.
-pr_labels = pr.labels
-unset_issue_labels = [label for label in labels_to_add if label not in pr_labels]
+# Get the superset of every label on every linked issue.
+all_associated_issue_labels = {label.name for number in closing_numbers for label in repo.get_issue(int(number)).labels}
+
+# Filter the superset by our list of acceptable labels to copy.
+copyable_associated_issue_labels = all_associated_issue_labels.intersection(COPYABLE_LABELS)
+
+# Convert the list of PR labels into a set.
+pr_labels = {label.name for label in pr.labels}
+
+# Find the set of all labels we want to copy that aren't already set on the PR.
+unset_associated_issue_labels = copyable_associated_issue_labels.difference(pr_labels)
 
 # If there are any labels we need to add, add them.
-if len(unset_issue_labels) > 0:
-    labels_to_set = pr_labels + unset_issue_labels
-    pr.set_labels(*labels_to_set)
+if len(unset_associated_issue_labels) > 0:
+    pr.set_labels(*list(unset_associated_issue_labels))
