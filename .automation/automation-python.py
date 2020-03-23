@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import itertools
 import json
 import re
 import sys
