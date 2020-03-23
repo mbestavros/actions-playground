@@ -41,8 +41,8 @@ closing_numbers_pr_body = {number for keyword, number in regex_pr_body.findall(p
 
 # Extract all associated issues from PR commit messages
 regex_commit_messages = re.compile("(close[sd]?|fix|fixe[sd]?|resolve[sd]?|related)\s*:?\s+#(\d+)", re.I)
-closing_numbers_commit_messages_results = [regex_commit_messages.findall(commit.commit.message) for commit in pr.get_commits()]
-closing_numbers_commit_messages = {number for keyword, number in closing_numbers_commit_messages_results}
+results = [regex.findall(c.commit.message) for c in pr.get_commits()]
+closing_numbers_commit_messages = {num for verb, num in itertools.chain(*results)}
 
 # Get the union of both sets of associated issue numbers
 closing_numbers = closing_numbers_pr_body.union(closing_numbers_commit_messages)
