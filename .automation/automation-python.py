@@ -46,24 +46,21 @@ closing_numbers_pr_body = {number for keyword, number in regex_pr_body.findall(p
 regex_commit_messages = re.compile("(close[sd]?|fix|fixe[sd]?|resolve[sd]?|related)\s*:?\s+#(\d+)", re.I)
 closing_numbers_commit_messages = {number for commit in pr.get_commits() for keyword, number in regex_commit_messages.findall(commit.commit.message)}
 
-closing_numbers = closing_numbers_pr_body.union(closing_numbers_commit_messages)
+closing_numbers = closing_numbers_pr_body.intersection(closing_numbers_commit_messages)
 
-if len(closing_numbers) == 0:
-    quit()
+# Get the superset of every label on every linked issue, filtered by our 
+# acceptable labels list.
+labels_to_add = []
+for number in closing_numbers:
+    for label in repo.get_issue(int(number)).labels :
+        if label not in labels_to_add and label.name in COPYABLE_LABELS:
+            labels_to_add += [label]
 
-# Get the superset of every label on every linked issue.
-all_associated_issue_label_lists = [repo.get_issue(int(number)).labels for number in closing_numbers]
-all_associated_issue_labels = set([label for labels in all_associated_issue_label_lists for label in labels])
-
-# Filter the superset by our list of acceptable labels to copy.
-copyable_associated_issue_labels = all_associated_issue_labels.intersection(COPYABLE_LABELS)
-
-# Convert the list of PR labels into a set.
-pr_labels = set(pr.labels)
-
-# Find the set of all labels we want to copy that aren't already set on the PR.
-unset_associated_issue_labels = copyable_associated_issue_labels.difference(pr_labels)
+# Figure out all labels not yet set on the PR.
+pr_labels = pr.labels
+unset_issue_labels = [label for label in labels_to_add if label not in pr_labels]
 
 # If there are any labels we need to add, add them.
-if len(unset_associated_issue_labels) > 0:
-    pr.set_labels(*list(unset_associated_issue_labels))
+if len(unset_issue_labels) > 0:
+    labels_to_set = pr_labels + unset_issue_labels
+    pr.set_labels(*labels_to_set)
