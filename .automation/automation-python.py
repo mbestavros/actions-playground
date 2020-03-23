@@ -37,24 +37,23 @@ pr_head_sha = event["check_suite"]["head_sha"]
 pr = {pr.head.sha: pr for pr in repo.get_pulls()}[pr_head_sha]
 
 # Extract all associated issues from closing keyword in PR
-regex_pr_body = re.compile("(close[sd]?|fix|fixe[sd]?|resolve[sd]?)\s*:?\s+#(\d+)", re.I)
-closing_numbers_pr_body = {number for keyword, number in regex_pr_body.findall(pr.body)}
+regex_keywords = re.compile("(close[sd]?|fix|fixe[sd]?|resolve[sd]?)\s*:?\s+#(\d+)", re.I)
+closing_numbers_pr_body = {number for keyword, number in regex_keywords.findall(pr.body)}
 
 # Extract all associated issues from PR commit messages
-regex_commit_messages = re.compile("(close[sd]?|fix|fixe[sd]?|resolve[sd]?|related)\s*:?\s+#(\d+)", re.I)
-results = [regex_commit_messages.findall(c.commit.message) for c in pr.get_commits()]
-closing_numbers_commit_messages = {num for verb, num in itertools.chain(*results)}
+results_commit_messages = [regex_keywords.findall(c.commit.message) for c in pr.get_commits()]
+closing_numbers_commit_messages = {num for verb, num in itertools.chain(*results_commit_messages)}
 
 # Get the union of both sets of associated issue numbers
 closing_numbers = closing_numbers_pr_body.union(closing_numbers_commit_messages)
 
-# If there are no associated issues, we're done. If not, we need to find out
-# which labels we need to add.
-if len(closing_numbers) == 0:
-    quit()
+
 
 # Get the superset of every label on every linked issue.
-all_associated_issue_labels = {label.name for number in closing_numbers for label in repo.get_issue(int(number)).labels}
+label_list = []
+for number in closing_numbers:
+    label_list += [repo.get_issue(int(number)).labels]
+all_associated_issue_labels = {label.name for label in label_list}
 
 # Filter the superset by our list of acceptable labels to copy.
 copyable_associated_issue_labels = all_associated_issue_labels.intersection(COPYABLE_LABELS)
