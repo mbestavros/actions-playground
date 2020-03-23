@@ -46,7 +46,7 @@ closing_numbers_pr_body = {number for keyword, number in regex_pr_body.findall(p
 regex_commit_messages = re.compile("(close[sd]?|fix|fixe[sd]?|resolve[sd]?|related)\s*:?\s+#(\d+)", re.I)
 closing_numbers_commit_messages = {number for commit in pr.get_commits() for keyword, number in regex_commit_messages.findall(commit.commit.message)}
 
-closing_numbers = closing_numbers_pr_body.intersection(closing_numbers_commit_messages)
+closing_numbers = closing_numbers_pr_body.union(closing_numbers_commit_messages)
 
 # Get the superset of every label on every linked issue, filtered by our 
 # acceptable labels list.
