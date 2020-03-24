@@ -24,26 +24,6 @@ g = Github(token)
 # Initialize repo
 repo = g.get_repo(repository)
 
-# Open Github event JSON
-with open(path) as f:
-    event = json.load(f)
-
-#Get the PR we're working on.
-pr = get_pr(event)
-pr_labels = {label.name for label in pr.labels}
-
-# Get every label on every linked issue.
-issues = get_related_issues(pr)
-issues_labels = [repo.get_issue(n).labels for n in issues]
-issues_labels = {l.name for l in itertools.chain(*issues_labels)}
-
-# Find the set of all labels we want to copy that aren't already set on the PR.
-unset_labels = COPYABLE_LABELS & issues_labels - pr_labels
-
-# If there are any labels we need to add, add them.
-if len(unset_labels) > 0:
-    pr.set_labels(*list(unset_labels))
-
 def get_pr(event):
     # --- Extract PR from event JSON ---
     # `check_run`/`check_suite` does not include any direct reference to the PR
@@ -66,3 +46,23 @@ def get_related_issues(pr):
 
     # Get the union of both sets of associated issue numbers
     return numbers_pr_body | numbers_commit_messages
+
+# Open Github event JSON
+with open(path) as f:
+    event = json.load(f)
+
+#Get the PR we're working on.
+pr = get_pr(event)
+pr_labels = {label.name for label in pr.labels}
+
+# Get every label on every linked issue.
+issues = get_related_issues(pr)
+issues_labels = [repo.get_issue(n).labels for n in issues]
+issues_labels = {l.name for l in itertools.chain(*issues_labels)}
+
+# Find the set of all labels we want to copy that aren't already set on the PR.
+unset_labels = COPYABLE_LABELS & issues_labels - pr_labels
+
+# If there are any labels we need to add, add them.
+if len(unset_labels) > 0:
+    pr.set_labels(*list(unset_labels))
