@@ -24,6 +24,7 @@ g = Github(token)
 # Initialize repo
 repo = g.get_repo(repository)
 
+# Returns a pull request extracted from Github's event JSON.
 def get_pr(event):
     # --- Extract PR from event JSON ---
     # `check_run`/`check_suite` does not include any direct reference to the PR
@@ -36,18 +37,16 @@ def get_pr(event):
     # Find the repo PR that matches the head SHA we found
     return {pr.head.sha: pr for pr in repo.get_pulls()}[pr_head_sha]
 
+# Get all issue numbers related to a PR.
 def get_related_issues(pr):
     # Extract all associated issues from closing keyword in PR
-    numbers_pr_body = {int(num) for verb, num in REGEX.findall(pr.body)}
+    for verb, num in REGEX.findall(pr.body):
+        yield int(num)
 
     # Extract all associated issues from PR commit messages
     results_commit_messages = [REGEX.findall(c.commit.message) for c in pr.get_commits()]
-    numbers_commit_messages = {int(num) for verb, num in itertools.chain(*results_commit_messages)}
-
-    # Get the union of both sets of associated issue numbers
-    union = numbers_pr_body | numbers_commit_messages 
-    print(union)
-    return union
+    for verb, num in itertools.chain(*results_commit_messages):
+        yield int(num)
 
 # Open Github event JSON
 with open(path) as f:
@@ -61,11 +60,9 @@ pr_labels = {label.name for label in pr.labels}
 issues = get_related_issues(pr)
 issues_labels = [repo.get_issue(n).labels for n in issues]
 issues_labels = {l.name for l in itertools.chain(*issues_labels)}
-print(issues_labels)
 
 # Find the set of all labels we want to copy that aren't already set on the PR.
 unset_labels = COPYABLE_LABELS & issues_labels - pr_labels
-print(unset_labels)
 
 # If there are any labels we need to add, add them.
 if len(unset_labels) > 0:
