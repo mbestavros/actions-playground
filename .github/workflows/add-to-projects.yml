@@ -1,6 +1,10 @@
 name: add-to-projects
 
-on: [issues.labeled, issues.unlabeled] #, pull_request.labeled, pull_request.unlabeled]
+on:
+    issues:
+        types:
+            - labeled
+            - unlabeled #, pull_request.labeled, pull_request.unlabeled
 
 jobs:
   add-to-projects:
