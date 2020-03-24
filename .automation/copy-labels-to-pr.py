@@ -13,17 +13,6 @@ COPYABLE_LABELS = {
     "good first issue",
 }
 
-REGEX = re.compile("(close[sd]?|fix|fixe[sd]?|resolve[sd]?)\s*:?\s+#(\d+)", re.I)
-
-# Get inputs from shell
-(token, repository, path) = sys.argv[1:4]
-
-# Authenticate with Github using our token
-g = Github(token)
-
-# Initialize repo
-repo = g.get_repo(repository)
-
 # Returns a pull request extracted from Github's event JSON.
 def get_pr(event):
     # --- Extract PR from event JSON ---
@@ -39,14 +28,26 @@ def get_pr(event):
 
 # Get all issue numbers related to a PR.
 def get_related_issues(pr):
+    # Regex to pick out closing keywords.
+    regex = re.compile("(close[sd]?|fix|fixe[sd]?|resolve[sd]?)\s*:?\s+#(\d+)", re.I)
+
     # Extract all associated issues from closing keyword in PR
-    for verb, num in REGEX.findall(pr.body):
+    for verb, num in regex.findall(pr.body):
         yield int(num)
 
     # Extract all associated issues from PR commit messages
-    results_commit_messages = [REGEX.findall(c.commit.message) for c in pr.get_commits()]
-    for verb, num in itertools.chain(*results_commit_messages):
-        yield int(num)
+    for c in pr.get_commits():
+        for verb, num in regex.findall(c.commit.message):
+            yield int(num)
+
+# Get inputs from shell
+(token, repository, path) = sys.argv[1:4]
+
+# Authenticate with Github using our token
+g = Github(token)
+
+# Initialize repo
+repo = g.get_repo(repository)
 
 # Open Github event JSON
 with open(path) as f:
