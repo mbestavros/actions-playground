@@ -1,0 +1,13 @@
+name: add-to-projects
+
+on: [issues.labeled, issues.unlabeled] #, pull_request.labeled, pull_request.unlabeled]
+
+jobs:
+  add-to-projects:
+    runs-on: ubuntu-latest
+    container: quay.io/enarx/fedora-test
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: add-to-project-on-label
+      run: cat $GITHUB_EVENT_PATH && python3 .automation/move-to-project.py ${{ secrets.GITHUB_TOKEN }} $GITHUB_REPOSITORY $GITHUB_EVENT_PATH
