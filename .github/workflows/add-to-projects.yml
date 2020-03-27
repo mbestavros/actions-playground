@@ -5,6 +5,10 @@ on:
         types:
             - labeled
             - unlabeled #, pull_request.labeled, pull_request.unlabeled
+    pull_request:
+        types:
+            - labeled
+            - unlabeled
 
 jobs:
   add-to-projects:
