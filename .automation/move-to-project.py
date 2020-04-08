@@ -49,5 +49,5 @@ if(action == "labeled"):
 elif(action == "unlabeled"):
     for column in project.get_columns():
         for card in column.get_cards():
-            if card.get_content().id == content_id:
+            if(card.get_content() is not None and card.get_content().id == content_id):
                 card.delete()
