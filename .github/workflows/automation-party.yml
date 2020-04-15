@@ -1,0 +1,17 @@
+# Automation that runs upon pull requests being merged.
+name: automation-party
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  party:
+    runs-on: ubuntu-latest
+    #container: quay.io/enarx/fedora-test
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: party
+      run: cat $GITHUB_EVENT_PATH #&& .automation/party ${{ secrets.GITHUB_TOKEN }} $GITHUB_REPOSITORY $GITHUB_EVENT_PATH
