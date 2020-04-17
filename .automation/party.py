@@ -19,8 +19,14 @@ def get_pr(event):
     print("pr head sha")
     print(pr_head_sha)
 
+    print("getting commit")
+    commit = repo.get_git_commit(pr_head_sha)
+
+    print("getting associated prs")
+
+
     # Find the repo PR that matches the head SHA we found
-    return {pr.head.sha: pr for pr in repo.get_pulls(state="closed")}#[pr_head_sha]
+    return {pr.head.sha: pr for pr in commit.get_pulls()}#[pr_head_sha]
 
 # Get inputs from shell
 (token, repository, path) = sys.argv[1:4]
@@ -32,9 +38,11 @@ repo = Github(token).get_repo(repository)
 with open(path) as f:
     event = json.load(f)
 
+print("")
+print("")
+
 # Get the PR we're working on.
 pr = get_pr(event)
 
-print("")
-print("")
+
 print(pr)
