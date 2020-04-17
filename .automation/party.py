@@ -37,4 +37,4 @@ with open(path) as f:
 pr = get_pr(event)
 
 if(pr.review_comments == 0):
-    pr.create_comment("![Well done!](https://www.picgifs.com/reaction-gifs/reaction-gifs/it-crowd/picgifs-it-crowd-82110.gif)")
+    pr.create_issue_comment("![Well done!](https://www.picgifs.com/reaction-gifs/reaction-gifs/it-crowd/picgifs-it-crowd-82110.gif)")
