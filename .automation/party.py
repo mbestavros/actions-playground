@@ -10,23 +10,18 @@ from github import Github
 # Returns a pull request extracted from Github's event JSON.
 def get_pr(event):
     # --- Extract PR from event JSON ---
-    # `check_run`/`check_suite` does not include any direct reference to the PR
-    # that triggered it in its event JSON. We have to extrapolate it using the head
-    # SHA that *is* there.
+    # `push` does not include any direct reference to the PR that merged it in
+    # its event JSON. We have to extrapolate it using the head commit ID that
+    # *is* there.
 
-    # Get head SHA from event JSON
-    pr_head_sha = event["head_commit"]["id"]
-    print("pr head sha")
-    print(pr_head_sha)
+    # Get head ID from event JSON
+    pr_head_id = event["head_commit"]["id"]
 
-    print("getting commit")
-    commit = repo.get_commit(pr_head_sha)
+    # Grab the commit from the ID
+    commit = repo.get_commit(pr_head_id)
 
-    print("getting associated prs")
-
-
-    # Find the repo PR that matches the head SHA we found
-    return {pr.head.sha: pr for pr in commit.get_pulls()}#[pr_head_sha]
+    # Get the commit's associated pull (there should only be one) and return.
+    return commit.get_pulls()[0]
 
 # Get inputs from shell
 (token, repository, path) = sys.argv[1:4]
@@ -45,4 +40,4 @@ print("")
 pr = get_pr(event)
 
 
-print(pr)
+print(pr.number)
