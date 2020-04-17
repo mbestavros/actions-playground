@@ -20,7 +20,7 @@ def get_pr(event):
     print(pr_head_sha)
 
     print("getting commit")
-    commit = repo.get_git_commit(pr_head_sha)
+    commit = repo.get_commit(pr_head_sha)
 
     print("getting associated prs")
 
