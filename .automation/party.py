@@ -33,11 +33,8 @@ repo = Github(token).get_repo(repository)
 with open(path) as f:
     event = json.load(f)
 
-print("")
-print("")
-
 # Get the PR we're working on.
 pr = get_pr(event)
 
-
-print(pr.number)
+if(pr.review_comments == 0):
+    pr.create_comment("![Well done!](https://www.picgifs.com/reaction-gifs/reaction-gifs/it-crowd/picgifs-it-crowd-82110.gif)")
