@@ -14,4 +14,4 @@ jobs:
     - uses: actions/checkout@v2
     
     - name: party
-      run: cat $GITHUB_EVENT_PATH && .automation/party.py ${{ secrets.GITHUB_TOKEN }} $GITHUB_REPOSITORY $GITHUB_EVENT_PATH
+      run: cat $GITHUB_EVENT_PATH && python3 .automation/party.py ${{ secrets.GITHUB_TOKEN }} $GITHUB_REPOSITORY $GITHUB_EVENT_PATH
