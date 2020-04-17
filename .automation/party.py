@@ -16,9 +16,11 @@ def get_pr(event):
 
     # Get head SHA from event JSON
     pr_head_sha = event["head_commit"]["id"]
+    print("pr head sha")
+    print(pr_head_sha)
 
     # Find the repo PR that matches the head SHA we found
-    return {pr.head.sha: pr for pr in repo.get_pulls(state="closed")}[pr_head_sha]
+    return {pr.head.sha: pr for pr in repo.get_pulls(state="closed")}#[pr_head_sha]
 
 # Get inputs from shell
 (token, repository, path) = sys.argv[1:4]
@@ -33,4 +35,6 @@ with open(path) as f:
 # Get the PR we're working on.
 pr = get_pr(event)
 
-print(pr.title)
+print("")
+print("")
+print(pr)
