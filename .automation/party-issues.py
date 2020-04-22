@@ -43,6 +43,6 @@ issue = get_issue(event)
 # Check whether the person opening the issue has opened an issue in the
 # repository before. If it's their first, let's give them a warm welcome.
 author = issue.user
-if(True):
+if(len([i for i in repo.get_issues(state="all") if i.user == author]) == 0):
     gif = random.sample(FIRST_ISSUE, 1)[0]
     issue.create_comment("Congratulations on filing your first issue! Welcome to the project!<br/><br/>![We're happy to have you!](" + gif + ")")
