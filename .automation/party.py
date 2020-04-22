@@ -54,7 +54,9 @@ if(len([r for r in pr.get_reviews() if r.state == "CHANGES_REQUESTED"]) == 0):
     gif = random.sample(ONESHOT_LINKS, 1)[0]
     pr.create_issue_comment("Congratulations on a clean one-shot merge!<br/><br/>![Well done!](" + gif + ")")
 
-# Late night
-# commits = pr.get_commits()
-
-# {commit for commit in pr.get_commits() if commit.commit.committer.date}
+# --- Late night ---
+# Check if the merged PR has any commits that were made late at night. If yes,
+# it's party time.
+if(len([c for c in pr.get_commits() if c.commit.committer.date.hour < 4]) > 0):
+    gif = random.sample(LATE_NIGHT, 1)[0]
+    pr.create_issue_comment("Someone's burning the midnight oil...<br/><br/>![Get some sleep!](" + gif + ")")
