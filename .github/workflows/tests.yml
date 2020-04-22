@@ -14,10 +14,10 @@ jobs:
 
   consistent-linked-issues:
     runs-on: ubuntu-latest
-    #container: quay.io/enarx/fedora-test
+    container: quay.io/enarx/fedora-test
     steps:
     - uses: actions/checkout@v2
     
     # Ensure Cargo edition is correct.
     - name: Linked issues are consistent between commits and description
-      run: cat $GITHUB_EVENT_PATH # && python3 .tests/linked-issues.py ${{ secrets.GITHUB_TOKEN }} $GITHUB_REPOSITORY $GITHUB_EVENT_PATH
+      run: cat $GITHUB_EVENT_PATH && python3 .tests/linked-issues.py ${{ secrets.GITHUB_TOKEN }} $GITHUB_REPOSITORY $GITHUB_EVENT_PATH
