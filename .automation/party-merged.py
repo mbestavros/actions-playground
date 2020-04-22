@@ -8,7 +8,7 @@ import re
 import sys
 from github import Github
 
-ONESHOT_LINKS = {
+ONESHOT = {
     "https://giant.gfycat.com/SpeedyAmazingIndianpalmsquirrel.webm",
     "https://cdn.quotesgram.com/img/3/48/841275503-tumblr_mfx1r9sZNM1qa601io6_250.gif",
     "https://i.imgur.com/Cn9zAnI.gif",
@@ -53,7 +53,7 @@ pr = get_pr(event)
 # Check if there were any reviews that requested changes. If not, it's party
 # time.
 if(len([r for r in pr.get_reviews() if r.state == "CHANGES_REQUESTED"]) == 0):
-    gif = random.sample(ONESHOT_LINKS, 1)[0]
+    gif = random.sample(ONESHOT, 1)[0]
     pr.create_issue_comment("Congratulations on a clean one-shot merge!<br/><br/>![Well done!](" + gif + ")")
 
 # --- Late night ---

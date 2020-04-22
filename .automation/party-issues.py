@@ -8,21 +8,23 @@ import re
 import sys
 from github import Github
 
+FIRST_ISSUE = {
+    "https://gifimage.net/wp-content/uploads/2017/08/it-crowd-gif-12.gif",
+    "https://media1.tenor.com/images/81f6c0d34b867a7ca405125aa0e7f328/tenor.gif?itemid=6233135",
+    "https://i.giphy.com/media/FspLvJQlQACXu/giphy.webp",
+}
+
 # Returns a pull request extracted from Github's event JSON.
 def get_issue(event):
-    # --- Extract PR from event JSON ---
-    # `push` does not include any direct reference to the PR that merged it in
-    # its event JSON. We have to extrapolate it using the head commit ID that
-    # *is* there.
+    # --- Extract issue from event JSON ---
+    # `issues` directly refers the the issue number in the event JSON. Extract
+    # that number and use it to grab the issue.
 
-    # Get head ID from event JSON
-    pr_head_id = event["head_commit"]["id"]
+    # Get issue number
+    issue_number = event["issue"]["number"]
 
-    # Grab the commit from the ID
-    commit = repo.get_commit(pr_head_id)
-
-    # Get the commit's associated pull (there should only be one) and return.
-    return commit.get_pulls()[0]
+    # Grab the issue from the number and return
+    return repo.get_issue(issue_number)
 
 # Get inputs from shell
 (token, repository, path) = sys.argv[1:4]
@@ -35,11 +37,12 @@ with open(path) as f:
     event = json.load(f)
 
 # Get the PR we're working on.
-pr = get_issue(event)
+issue = get_issue(event)
 
-# --- Oneshot ---
-# Check if there were any reviews that requested changes. If not, it's party
-# time.
-#if(len([r for r in pr.get_reviews() if r.state == "CHANGES_REQUESTED"]) == 0):
-#    gif = random.sample(ONESHOT_LINKS, 1)[0]
-#    pr.create_issue_comment("Congratulations on a clean one-shot merge!<br/><br/>![Well done!](" + gif + ")")
+# --- Newcomer ---
+# Check whether the person opening the issue has opened an issue in the
+# repository before. If it's their first, let's give them a warm welcome.
+author = issue.user
+if(len([i for i in repo.get_issues(state="all")]) == 0):
+    gif = random.sample(FIRST_ISSUE, 1)[0]
+    issue.create_comment("Congratulations on filing your first issue! Welcome to the project!<br/><br/>![We're happy to have you!](" + gif + ")")
