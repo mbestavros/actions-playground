@@ -55,12 +55,10 @@ unlinked_issues = commits_issues - description_issues
 print(unlinked_issues)
 
 if len(unlinked_issues) > 0:
-    print("Your PR contains one or more commit messages that refer to closing\
-        issues, but those issues are not linked in your pull request\
-            description.")
+    print("Your PR contains one or more commit messages that refer to closing issues, but those issues are not linked in your pull request description.")
     print("Please include the following in your PR description:\n")
     for n in unlinked_issues:
-        print("Resolves #" + n)
+        print("Resolves #" + str(n))
     print("\nYou may use any of Github's supported closing keywords in place of 'Resolves':")
     print("\nhttps://help.github.com/en/github/managing-your-work-on-github/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword")
     exit(1)
