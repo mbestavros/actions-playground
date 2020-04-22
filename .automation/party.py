@@ -16,7 +16,9 @@ ONESHOT_LINKS = {
     "https://www.picgifs.com/reaction-gifs/reaction-gifs/it-crowd/picgifs-it-crowd-82110.gif",
 }
 
-LATE_NIGHT = "https://thumbs.gfycat.com/FlawlessSimplisticGoldenmantledgroundsquirrel-size_restricted.gif"
+LATE_NIGHT = {
+    "https://thumbs.gfycat.com/FlawlessSimplisticGoldenmantledgroundsquirrel-size_restricted.gif",
+}
 
 # Returns a pull request extracted from Github's event JSON.
 def get_pr(event):
@@ -58,7 +60,7 @@ if(len([r for r in pr.get_reviews() if r.state == "CHANGES_REQUESTED"]) == 0):
 # Check if the merged PR has any commits that were made late at night. If yes,
 # it's party time.
 late_night_commits = [c.commit.committer.date for c in pr.get_commits()]# if c.commit.committer.date.hour < 4]
-print(late_night_commits)
+print(late_night_commits[0].tzinfo)
 print(len(late_night_commits))
 if(len(late_night_commits) > 0):
     gif = random.sample(LATE_NIGHT, 1)[0]
