@@ -49,6 +49,13 @@ with open(path) as f:
 pr = get_pr(event)
 
 # Oneshot
-if(pr.review_comments == 0):
-    gif = random.sample(ONESHOT_LINKS, 1)
-    pr.create_issue_comment("Congratulations on a lightning-fast merge!<br/><br/>![Well done!](" + gif[0] + ")")
+# Check if there were any reviews that requested changes.
+# If not, it's party time.
+if(len([r for r in pr.get_reviews() if r.state == "CHANGES_REQUESTED"]) == 0):
+    gif = random.sample(ONESHOT_LINKS, 1)[0]
+    pr.create_issue_comment("Congratulations on a lightning-fast merge!<br/><br/>![Well done!](" + gif + ")")
+
+# Late night
+# commits = pr.get_commits()
+
+# {commit for commit in pr.get_commits() if commit.commit.committer.date}
