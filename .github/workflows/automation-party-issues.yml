@@ -1,0 +1,14 @@
+# Automation that runs upon issues being filed.
+name: automation-party-issues
+
+on: issues.opened
+
+jobs:
+  party:
+    runs-on: ubuntu-latest
+    container: quay.io/enarx/fedora-test
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: party
+      run: cat $GITHUB_EVENT_PATH && python3 .automation/party-issues.py ${{ secrets.GITHUB_TOKEN }} $GITHUB_REPOSITORY $GITHUB_EVENT_PATH
