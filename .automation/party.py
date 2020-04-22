@@ -8,7 +8,6 @@ import re
 import sys
 from github import Github
 
-# We don't want to copy all labels on linked issues; only those in this subset.
 ONESHOT_LINKS = {
     "https://giant.gfycat.com/SpeedyAmazingIndianpalmsquirrel.webm",
     "https://cdn.quotesgram.com/img/3/48/841275503-tumblr_mfx1r9sZNM1qa601io6_250.gif",
@@ -48,12 +47,12 @@ with open(path) as f:
 # Get the PR we're working on.
 pr = get_pr(event)
 
-# Oneshot
-# Check if there were any reviews that requested changes.
-# If not, it's party time.
+# --- Oneshot ---
+# Check if there were any reviews that requested changes. If not, it's party
+# time.
 if(len([r for r in pr.get_reviews() if r.state == "CHANGES_REQUESTED"]) == 0):
     gif = random.sample(ONESHOT_LINKS, 1)[0]
-    pr.create_issue_comment("Congratulations on a lightning-fast merge!<br/><br/>![Well done!](" + gif + ")")
+    pr.create_issue_comment("Congratulations on a clean one-shot merge!<br/><br/>![Well done!](" + gif + ")")
 
 # Late night
 # commits = pr.get_commits()
