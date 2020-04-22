@@ -51,4 +51,4 @@ pr = get_pr(event)
 # Oneshot
 if(pr.review_comments == 0):
     gif = random.sample(ONESHOT_LINKS, 1)
-    pr.create_issue_comment("Congratulations on a lightning-fast merge!<br/>![Well done!](" + gif[0] + ")")
+    pr.create_issue_comment("Congratulations on a lightning-fast merge!<br/><br/>![Well done!](" + gif[0] + ")")
