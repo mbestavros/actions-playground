@@ -14,7 +14,7 @@ FIRST_ISSUE = {
     "https://i.giphy.com/media/FspLvJQlQACXu/giphy.webp",
 }
 
-# Returns a pull request extracted from Github's event JSON.
+# Returns an issue extracted from Github's event JSON.
 def get_issue(event):
     # --- Extract issue from event JSON ---
     # `issues` directly refers the the issue number in the event JSON. Extract
