@@ -51,7 +51,7 @@ description_issues = set(get_linked_issues_body(pr))
 print(commits_issues)
 print(description_issues)
 
-unlinked_issues = description_issues - commits_issues
+unlinked_issues = commits_issues - description_issues
 print(unlinked_issues)
 
 if len(unlinked_issues) > 0:
