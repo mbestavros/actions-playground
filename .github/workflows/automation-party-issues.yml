@@ -1,7 +1,9 @@
 # Automation that runs upon issues being filed.
 name: automation-party-issues
 
-on: issues.opened
+on:
+  issues:
+    types: [opened]
 
 jobs:
   party:
