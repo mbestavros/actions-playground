@@ -47,7 +47,7 @@ if(action == "labeled"):
     project_column = project.get_columns()[0]
     try:
         project_column.create_card(content_id=content_id, content_type=content_type)
-    except github.GithubException.GithubException as e:
+    except github.GithubException as e:
         print(e)
         print("")
         data = json.load(e.data)
