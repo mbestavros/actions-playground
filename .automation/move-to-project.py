@@ -45,7 +45,12 @@ project = [p for p in repo.get_projects() if p.name == LABEL_PROJECTS[label_name
 # remove from the project.
 if(action == "labeled"):
     project_column = project.get_columns()[0]
-    project_column.create_card(content_id=content_id, content_type=content_type)
+    try:
+        project_column.create_card(content_id=content_id, content_type=content_type)
+    except github.GithubException.GithubException:
+        print("Card already in project.")
+        sys.exit(0)
+    
 elif(action == "unlabeled"):
     for column in project.get_columns():
         for card in column.get_cards():
