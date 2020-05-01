@@ -50,9 +50,8 @@ if(action == "labeled"):
     except github.GithubException as e:
         print(e)
         print("")
-        data = json.load(e.data)
-        print(data["errors"]["message"])
-        if data["errors"]["message"] == "Project already has the associated issue":
+        print(e.data["errors"]["message"])
+        if e.data["errors"]["message"] == "Project already has the associated issue":
             print("Card already in project.")
             sys.exit(0)
     
