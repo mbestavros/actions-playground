@@ -3,7 +3,7 @@
 import itertools
 import json
 import sys
-from github import Github
+import github
 
 # We don't want to copy all labels on linked issues; only those in this subset.
 LABEL_PROJECTS = {
@@ -15,7 +15,7 @@ LABEL_PROJECTS = {
 (token, repository, path) = sys.argv[1:4]
 
 # Authenticate with Github using our token
-g = Github(token)
+g = github.Github(token)
 
 # Initialize repo
 repo = g.get_repo(repository)
@@ -47,9 +47,14 @@ if(action == "labeled"):
     project_column = project.get_columns()[0]
     try:
         project_column.create_card(content_id=content_id, content_type=content_type)
-    except Github.GithubException.GithubException:
-        print("Card already in project.")
-        sys.exit(0)
+    except github.GithubException.GithubException as e:
+        print(e)
+        print("")
+        data = json.load(e.data)
+        print(data["errors"]["message"])
+        if data["errors"]["message"] == "Project already has the associated issue":
+            print("Card already in project.")
+            sys.exit(0)
     
 elif(action == "unlabeled"):
     for column in project.get_columns():
