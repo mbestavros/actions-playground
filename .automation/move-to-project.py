@@ -51,8 +51,8 @@ if(action == "labeled"):
         print(e)
         print("")
         print(type(e.data))
-        print(e.data["errors"][0]["message"])
-        if e.data["errors"][0]["message"] == "Project already has the associated issue":
+        print(e.status)
+        if e.status == 422:
             print("Card already in project.")
             sys.exit(0)
     
